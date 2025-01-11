@@ -31,7 +31,7 @@
 Se você ainda não tem o repositório, baixe ou clone o projeto:
 
 ```bash
-git clone <https://github.com/Peixoty/Investty.git>
+git clone https://github.com/Peixoty/Investty.git
 ```
 #### Passo 2: Rodar a API localmente
 No terminal da pasta, rode:
