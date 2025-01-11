@@ -26,12 +26,12 @@
 
 **Atenção**: A extensão depende de uma API para buscar os preços dos ativos. Para fazer isso funcionar, você precisa rodar a API localmente. Siga os passos abaixo para configurá-la:
 
-#### Passo 1: Clonar o repositório da API
+#### Passo 1: Clone este repositório
 
-Se você ainda não tem o repositório da API, baixe ou clone o projeto:
+Se você ainda não tem o repositório, baixe ou clone o projeto:
 
 ```bash
-git clone <URL_DO_REPOSITORIO_DA_API>
+git clone <https://github.com/Peixoty/Investty.git>
 ```
 #### Passo 2: Rodar a API localmente
 No terminal da pasta, rode:
@@ -57,12 +57,16 @@ Agora que a API está rodando, a extensão poderá buscar os preços dos ativos 
 | |- popup.js
 | |- background.js
 |
+|-/icons
+| |- icon16x16.png
+| |- icon128x128.png
+|
 |-/public
-| |-popup.html
-| |-style.css
+| |- popup.html
+| |- style.css
 |
 |-/api
-  |-index.js
+  |- index.js
 ```
 
 ## Contribuindo
