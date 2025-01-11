@@ -86,3 +86,5 @@ document.getElementById("addButton").addEventListener("click", () => {
   // Carrega os ativos ao abrir o popup
   loadAtivos();
   
+  // Atualiza a cada 10 segundos: Você pode mudar trocando o valor abaixo (em milisegundos)
+  setInterval(loadAtivos, 10 * 1000)
