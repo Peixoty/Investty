@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Investty!",
+    "description": "Adicione ativos da bolsa e acompanhe sua cotação.",
+    "version": "1.0",
+    "permissions": [
+      "storage",
+      "activeTab"
+    ],
+    "background": {
+      "service_worker": "./backend/background.js"
+    },
+    "action": {
+      "default_popup": "./public/popup.html"
+    }
+  }
+  
