@@ -8,7 +8,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 300px;
-  width: 350px;
+  width: 375px;
   box-sizing: border-box;
 }
 
@@ -104,7 +104,7 @@ li:hover, .alerta-item:hover {
 /* Estilos das abas */
 .tabs {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
   margin-bottom: 20px;
   border-bottom: 2px solid #ddd;

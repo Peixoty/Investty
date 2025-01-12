@@ -62,8 +62,12 @@ function loadAlertas() {
     alertas.forEach((alerta, index) => {
       const listItem = document.createElement("li");
 
-      // Criando o conteúdo do item
-      listItem.textContent = `${alerta.ticker}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}`;
+      // Criando o conteúdo do item (somente com o texto do alerta, sem o botão)
+      const alertaText = document.createElement("span");
+      alertaText.textContent = `${alerta.ticker}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: Carregando...`;
+
+      // Adiciona o texto do alerta à lista
+      listItem.appendChild(alertaText);
 
       // Criando o botão de remover
       const removeButton = document.createElement("button");
@@ -78,6 +82,12 @@ function loadAlertas() {
 
       // Adiciona o item à lista
       alertasList.appendChild(listItem);
+
+      // Agora chama a função getPrecoAtivo passando o alertaText, onde o preço será atualizado
+      getPrecoAtivo(alerta.ticker, alertaText, (precoAtual) => {
+        // Atualiza o texto do alerta com o preço atual
+        alertaText.textContent = `${alerta.ticker}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: ${precoAtual}`;
+      });
     });
   });
 }
@@ -97,37 +107,28 @@ function removeAlerta(index) {
 function checkAlertas() {
   chrome.storage.local.get(["alertas", "ativos"], (data) => {
     const alertas = data.alertas || [];
-    const ativos = data.ativos || [];
 
     alertas.forEach((alerta) => {
-      if (ativos.includes(alerta.ticker)) {
         // Verifica o preço do ativo
         getPrecoAtivo(alerta.ticker, null, (price) => {
-          if (price <= alerta.minPrice) {
-            sendNotification(
-              `Preço baixo atingido!`,
-              `${alerta.ticker} caiu para ${price} (Min: ${alerta.minPrice})`
-            );
-          } else if (price >= alerta.maxPrice) {
-            sendNotification(
-              `Preço alto atingido!`,
-              `${alerta.ticker} subiu para ${price} (Max: ${alerta.maxPrice})`
-            );
+          // Converte o preço para um número (remove "R$" e vírgula)
+          const precoNumerico = parseFloat(price.replace("R$", "").replace(",", "."));
+
+          if (precoNumerico <= alerta.minPrice) {
+            chrome.runtime.sendMessage({
+              type: "sendNotification",
+              title: `Preço baixo atingido!`,
+              message: `${alerta.ticker} caiu para R$${price} (Min: R$${alerta.minPrice})`
+            });
+          } else if (precoNumerico >= alerta.maxPrice) {
+            chrome.runtime.sendMessage({
+              type: "sendNotification",
+              title: `Preço alto atingido!`,
+              message: `${alerta.ticker} subiu para R$${price} (Max: R$${alerta.maxPrice})`
+            });
           }
         });
-      }
     });
-  });
-  loadAtivos()
-}
-
-// Função para enviar notificações
-function sendNotification(title, message) {
-  chrome.notifications.create({
-    type: "basic",
-    iconUrl: "../public/icon.png",
-    title: title,
-    message: message,
   });
 }
 
@@ -214,4 +215,9 @@ loadAtivos();
 loadAlertas();
 
 // Verifica alertas a cada 5 minutos
-setInterval(checkAlertas, 10 * 1000);
+setInterval(checkAlertas, 5 * 1000);
+
+// No popup, atualiza o preço dos ativos a cada 30 segundos
+setInterval(loadAtivos, 30 * 1000)
+setInterval(loadAlertas, 30 * 1000)
+
