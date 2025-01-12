@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(() => {
   
   // Definir um alarme para verificar os alertas a cada 2 minutos (120 segundos)
   chrome.alarms.create("verificarAlertas", {
-    periodInMinutes: 2 // Periodicidade do alarme (2 minutos)
+    periodInMinutes: 0.1 // Periodicidade do alarme (2 minutos)
   });
 });
 
@@ -36,7 +36,7 @@ function getPrecoAtivo(ticker, itemText, callback) {
           itemText.textContent = `${ticker}: ${data.price}`;
         }
         if (callback) {
-          callback(data.price);
+          callback(data);
         }
       } else if (itemText) {
         itemText.textContent = `${ticker} - Preço não encontrado`;
@@ -56,18 +56,18 @@ function checkAlertas() {
     const alertas = data.alertas || [];
 
     alertas.forEach((alerta) => {
-      getPrecoAtivo(alerta.ticker, null, (price) => {
+      getPrecoAtivo(alerta.ticker, null, ({ticker, name, price}) => {
         const precoNumerico = parseFloat(price.replace("R$", "").replace(",", "."));
 
         if (precoNumerico <= alerta.minPrice) {
           sendNotification(
-            `Preço baixo atingido!`,
-            `${alerta.ticker} caiu para ${price} (Min: R$${alerta.minPrice})`
+            `${name} - Preço baixo atingido!`,
+            `${ticker} caiu para ${price} (Min: R$${alerta.minPrice})`
           );
         } else if (precoNumerico >= alerta.maxPrice) {
           sendNotification(
-            `Preço alto atingido!`,
-            `${alerta.ticker} subiu para ${price} (Max: R$${alerta.maxPrice})`
+            `${name} - Preço alto atingido!`,
+            `${ticker} subiu para ${price} (Max: R$${alerta.maxPrice})`
           );
         }
       });
