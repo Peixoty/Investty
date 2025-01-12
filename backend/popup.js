@@ -103,35 +103,6 @@ function removeAlerta(index) {
   });
 }
 
-// Função para verificar preços e enviar notificações
-function checkAlertas() {
-  chrome.storage.local.get(["alertas", "ativos"], (data) => {
-    const alertas = data.alertas || [];
-
-    alertas.forEach((alerta) => {
-        // Verifica o preço do ativo
-        getPrecoAtivo(alerta.ticker, null, (price) => {
-          // Converte o preço para um número (remove "R$" e vírgula)
-          const precoNumerico = parseFloat(price.replace("R$", "").replace(",", "."));
-
-          if (precoNumerico <= alerta.minPrice) {
-            chrome.runtime.sendMessage({
-              type: "sendNotification",
-              title: `Preço baixo atingido!`,
-              message: `${alerta.ticker} caiu para R$${price} (Min: R$${alerta.minPrice})`
-            });
-          } else if (precoNumerico >= alerta.maxPrice) {
-            chrome.runtime.sendMessage({
-              type: "sendNotification",
-              title: `Preço alto atingido!`,
-              message: `${alerta.ticker} subiu para R$${price} (Max: R$${alerta.maxPrice})`
-            });
-          }
-        });
-    });
-  });
-}
-
 // Função para buscar o preço do ativo
 function getPrecoAtivo(ticker, itemText, callback) {
   const url = `http://localhost:3000/${ticker}`;
@@ -214,10 +185,7 @@ function removeAtivo(index) {
 loadAtivos();
 loadAlertas();
 
-// Verifica alertas a cada 5 minutos
-setInterval(checkAlertas, 5 * 1000);
-
-// No popup, atualiza o preço dos ativos a cada 30 segundos
-setInterval(loadAtivos, 30 * 1000)
-setInterval(loadAlertas, 30 * 1000)
+// No popup, atualiza o preço dos ativos a cada 10 segundos
+setInterval(loadAtivos, 10 * 1000)
+setInterval(loadAlertas, 10 * 1000)
 

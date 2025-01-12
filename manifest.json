@@ -10,7 +10,8 @@
     "permissions": [
       "notifications",
       "storage",
-      "activeTab"
+      "activeTab",
+      "alarms"
     ],
     "background": {
       "service_worker": "./backend/background.js"
