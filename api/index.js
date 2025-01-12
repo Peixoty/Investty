@@ -21,7 +21,7 @@ app.use(cors())
 
 
 app.get("/:ticker", async (req, res) => {
-    const { ticker, bolsa } = req.params
+    const { ticker } = req.params
     const url = `https://www.google.com/finance/quote/${ticker}:BVMF`
 
     try {

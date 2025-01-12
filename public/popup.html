@@ -3,18 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investty</title>  <!-- Título da aba do navegador -->
+  <title>Investty</title> <!-- Título da aba do navegador -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="extension-title">Investty!</div> <!-- Título da extensão -->
-  <h1>Adicionar Ativo</h1>
-  <input type="text" id="ticker" placeholder="Ticker: (Ex.: PETR4)">
-  <button id="addButton">Adicionar</button>
-  
-  <h2>Lista de Ativos</h2>
-  <ul id="ativosList"></ul>
-  
+
+  <!-- Seletor de abas -->
+  <div class="tabs">
+    <button id="tab-lista" class="tab-button active">Lista de Ativos</button>
+    <button id="tab-alertas" class="tab-button">Alertas de Preço</button>
+  </div>
+
+  <!-- Seção: Lista de Ativos -->
+  <div id="section-lista" class="tab-content active">
+    <h1>Adicionar Ativo</h1>
+    <input type="text" id="ticker" placeholder="Ticker: (Ex.: PETR4)">
+    <button id="addButton">Adicionar</button>
+    <h2>Lista de Ativos</h2>
+    <ul id="ativosList"></ul> <!-- Esta lista só deve aparecer na aba de "Lista de Ativos" -->
+  </div>
+
+  <!-- Seção: Alertas de Preço -->
+  <div id="section-alertas" class="tab-content">
+    <h2>Alertas de Preço</h2>
+    <p>Defina limites de preço para seus ativos monitorados.</p>
+
+    <!-- Campos para configuração de alertas -->
+    <input type="text" id="alertaTicker" placeholder="Ticker: (Ex.: PETR4)">
+    <input type="number" id="minPrice" placeholder="Preço Mínimo">
+    <input type="number" id="maxPrice" placeholder="Preço Máximo">
+    <button id="addAlertButton">Adicionar Alerta</button>
+
+    <!-- Lista de Alertas -->
+    <ul id="alertasList"></ul> <!-- Esta lista só deve aparecer na aba de "Alertas de Preço" -->
+  </div>
+
   <script src="../backend/popup.js"></script>
 </body>
 </html>
