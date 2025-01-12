@@ -34,6 +34,13 @@ Se você ainda não tem o repositório, baixe ou clone o projeto:
 ```bash
 git clone https://github.com/Peixoty/Investty.git
 ```
+
+Caso você não tenha o `git` instalado, baixe por aqui:
+
+[Faça o download do projeto](https://github.com/Peixoty/Investty/archive/refs/heads/main.zip)
+
+Após baixar o zip, extraia o projeto para uma pasta.
+
 #### Passo 2: Rodar a API localmente
 No terminal da pasta, rode:
 ```bash
@@ -44,6 +51,8 @@ Isso fará com que a API seja iniciada em http://localhost:3000/
 Se você não tiver o node instalado, basta instalá-lo no link abaixo:
 
 [Instale o Node JS aqui](https://nodejs.org/pt/download)
+
+Após instalá-lo, rode o comando acima 👆
 
 ### Passo 4: Configuração final
 Agora que a API está rodando, a extensão poderá buscar os preços dos ativos corretamente.
