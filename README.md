@@ -41,6 +41,10 @@ node api.js
 ```
 Isso fará com que a API seja iniciada em http://localhost:3000/
 
+Se você não tiver o node instalado, basta instalá-lo no link abaixo:
+
+[Instale o Node JS aqui](https://nodejs.org/pt/download)
+
 ### Passo 4: Configuração final
 Agora que a API está rodando, a extensão poderá buscar os preços dos ativos corretamente.
 
