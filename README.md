@@ -9,6 +9,7 @@
 - **Adicionar ativos**: Insira o ticker do ativo que deseja monitorar.
 - **Visualizar preços**: A extensão busca o preço de cada ativo em tempo real e exibe na lista.
 - **Remover ativos**: Você pode remover ativos da sua lista a qualquer momento.
+- **Alertas de preço**: A extensão agora verifica periodicamente os preços dos ativos e envia notificações sempre que um preço atinge o limite configurado (mínimo ou máximo). A verificação é feita a cada 2 minutos. (Você pode alterar esse tempo na linha 6 do arquivo background.js)
   
 ---
 
@@ -43,11 +44,23 @@ Isso fará com que a API seja iniciada em http://localhost:3000/
 ### Passo 4: Configuração final
 Agora que a API está rodando, a extensão poderá buscar os preços dos ativos corretamente.
 
+### Novidades
+Agora, a extensão tem uma funcionalidade adicional: alertas de preço. A cada 2 minutos, a extensão verifica o preço dos ativos cadastrados e envia notificações caso o preço de um ativo atinja os limites configurados (mínimo ou máximo). Essa funcionalidade é controlada pela API ```chrome.alarms```, que cria um alarme para a verificação periódica.
+
+Como funciona:
+
+- O alarme é disparado a cada 2 minutos.
+- A extensão verifica o preço de cada ativo e, caso um preço atinja o limite definido para aquele ativo, uma notificação é enviada.
+
+Isso permite que você fique sempre atualizado com as flutuações de preço sem precisar atualizar manualmente a página.
 ## Exemplos de uso
 1. Abra a extensão no Chrome.
 2. Digite o ticker de uma ação (por exemplo, VALE3) no campo de entrada e clique em Adicionar.
 3. O preço do ativo será mostrado ao lado do nome da ação.
 4. Caso deseje remover o ativo da lista, basta clicar no botão de remoção ao lado do ativo.
+5. Você pode configurar alertas de preço para ser notificado quando o ativo atingir um valor mínimo ou máximo.
+6. A cada 2 minutos, a extensão verifica os preços e envia as notificações automaticamente.
+
 
 ## Estrutura do projeto
 ```bash
@@ -73,7 +86,7 @@ Agora que a API está rodando, a extensão poderá buscar os preços dos ativos 
 Sinta-se à vontade para contribuir com melhorias, correções de bugs ou novas funcionalidades! Se tiver alguma dúvida, não hesite em abrir uma issue ou enviar um pull request.
 
 ## Problemas Comuns
-Erro ao rodar a API: Certifique-se de que você está executando o comando node api.js a partir da pasta correta e que as dependências (express, axios, cheerio) estão instaladas.
+Erro ao rodar a API: Certifique-se de que você está executando o comando ```node api``` a partir da pasta correta e que as dependências (express, axios, cheerio) estão instaladas.
 
 CORS: A API deve ser executada no mesmo domínio (localhost) que a extensão para evitar problemas com a política de CORS.
 
