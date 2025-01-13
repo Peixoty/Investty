@@ -181,3 +181,16 @@ li:hover, .alerta-item:hover {
 #addAlertForm button:hover {
   background-color: #5562cc;
 }
+
+/* Outros estilos do projeto */
+
+/* Estilos para variação percentual */
+.positivo {
+  color: green;
+  font-weight: bold;
+}
+
+.negativo {
+  color: red;
+  font-weight: bold;
+}

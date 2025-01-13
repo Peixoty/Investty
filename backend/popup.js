@@ -116,9 +116,22 @@ function getPrecoAtivo(ticker, itemText, callback) {
       return response.json();
     })
     .then((data) => {
-      if (data && data.price) {
+      if (data && data.price && data.close) {
         if (itemText) {
-          itemText.textContent = `${ticker}: ${data.price}`;
+          const precoAtualNumerico = parseFloat(data.price.replace("R$", "").replace(",", "."));
+          const precoFechamentoNumerico = parseFloat(data.close.replace("R$", "").replace(",", "."));
+
+          const variacaoDia = ((precoAtualNumerico/precoFechamentoNumerico)-1)*100;
+
+          // Formata a variação com sinal e 2 casas decimais
+          const variacaoTexto = variacaoDia >= 0 
+          ? `+${variacaoDia.toFixed(2)}%` 
+          : `${variacaoDia.toFixed(2)}%`;
+
+          // Define a classe com base na variação
+          const variacaoClasse = variacaoDia >= 0 ? "positivo" : "negativo";
+
+          itemText.innerHTML = `${ticker}: ${data.price} <span class="${variacaoClasse}">(${variacaoTexto})</span>`;
         }
         if (callback) {
           callback(data.price);
