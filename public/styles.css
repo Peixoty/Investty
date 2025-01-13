@@ -186,11 +186,11 @@ li:hover, .alerta-item:hover {
 
 /* Estilos para variação percentual */
 .positivo {
-  color: green;
+  color: #1db345;
   font-weight: bold;
 }
 
 .negativo {
-  color: red;
+  color: #f83138;
   font-weight: bold;
 }
