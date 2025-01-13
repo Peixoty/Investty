@@ -52,12 +52,21 @@ function getPrecoAtivo(ticker, itemText, callback) {
 
 // Função para verificar os alertas
 function checkAlertas() {
+  // Moedas das bolsas do mundo
+  const moedas = ["R$", "$", "€", "£"];
+
   chrome.storage.local.get(["alertas", "ativos"], (data) => {
     const alertas = data.alertas || [];
 
     alertas.forEach((alerta) => {
       getPrecoAtivo(alerta.ticker, null, ({ticker, name, price}) => {
-        const precoNumerico = parseFloat(price.replace("R$", "").replace(",", "."));
+        let precoAtual = price;
+
+        moedas.forEach(moeda => {
+          precoAtual = precoAtual.replace(moeda, "")
+        })
+
+        const precoNumerico = parseFloat(precoAtual.replace(",", "."));
 
         if (precoNumerico <= alerta.minPrice) {
           sendNotification(

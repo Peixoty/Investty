@@ -64,7 +64,7 @@ function loadAlertas() {
 
       // Criando o conteúdo do item (somente com o texto do alerta, sem o botão)
       const alertaText = document.createElement("span");
-      alertaText.textContent = `${alerta.ticker}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: Carregando...`;
+      alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: Carregando...`;
 
       // Adiciona o texto do alerta à lista
       listItem.appendChild(alertaText);
@@ -86,7 +86,7 @@ function loadAlertas() {
       // Agora chama a função getPrecoAtivo passando o alertaText, onde o preço será atualizado
       getPrecoAtivo(alerta.ticker, alertaText, (precoAtual) => {
         // Atualiza o texto do alerta com o preço atual
-        alertaText.textContent = `${alerta.ticker}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: ${precoAtual}`;
+        alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: ${precoAtual}`;
       });
     });
   });
@@ -107,6 +107,9 @@ function removeAlerta(index) {
 function getPrecoAtivo(ticker, itemText, callback) {
   const url = `http://localhost:3000/${ticker}`;
 
+  // Moedas das bolsas do mundo
+  const moedas = ["R$", "$", "€", "£"];
+
   // Faz a requisição à API para buscar o preço
   fetch(url)
     .then((response) => {
@@ -118,8 +121,17 @@ function getPrecoAtivo(ticker, itemText, callback) {
     .then((data) => {
       if (data && data.price && data.close) {
         if (itemText) {
-          const precoAtualNumerico = parseFloat(data.price.replace("R$", "").replace(",", "."));
-          const precoFechamentoNumerico = parseFloat(data.close.replace("R$", "").replace(",", "."));
+          let precoAtual = data.price;
+          let precoFechamento = data.close;
+
+          // Remove os símbolos de moeda dinamicamente
+          moedas.forEach(moeda => {
+            precoAtual = precoAtual.replace(moeda, "");
+            precoFechamento = precoFechamento.replace(moeda, "");
+          });
+
+          const precoAtualNumerico = parseFloat(precoAtual.replace(",", "."));
+          const precoFechamentoNumerico = parseFloat(precoFechamento.replace(",", "."));
 
           const variacaoDia = ((precoAtualNumerico/precoFechamentoNumerico)-1)*100;
 
@@ -131,7 +143,7 @@ function getPrecoAtivo(ticker, itemText, callback) {
           // Define a classe com base na variação
           const variacaoClasse = variacaoDia >= 0 ? "positivo" : "negativo";
 
-          itemText.innerHTML = `${ticker}: ${data.price} <span class="${variacaoClasse}">(${variacaoTexto})</span>`;
+          itemText.innerHTML = `${ticker.split(":")[0]}: ${data.price} <span class="${variacaoClasse}">(${variacaoTexto})</span>`;
         }
         if (callback) {
           callback(data.price);
@@ -160,7 +172,7 @@ function loadAtivos() {
 
       // Criando o conteúdo do item
       const itemText = document.createElement("span");
-      itemText.textContent = `${ativo} - Carregando preço...`;
+      itemText.textContent = `${ativo.split(":")[0]} - Carregando preço...`;
       listItem.appendChild(itemText);
 
       // Criando o botão de remover

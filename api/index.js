@@ -21,8 +21,14 @@ app.use(cors())
 
 
 app.get("/:ticker", async (req, res) => {
-    const { ticker } = req.params
-    const url = `https://www.google.com/finance/quote/${ticker}:BVMF`
+    let { ticker } = req.params
+
+    // Verifica se o ticker não contém ":" (indicando que é um ticker da BVMF)
+    if(!ticker.includes(":")){
+        ticker = `${ticker}:BVMF`;
+    }
+
+    const url = `https://www.google.com/finance/quote/${ticker}`
 
     try {
         const { data } = await axios.get(url)
@@ -47,3 +53,4 @@ app.get("/:ticker", async (req, res) => {
 })
 
 app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
+
