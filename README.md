@@ -10,6 +10,7 @@
 - **Visualizar preços**: A extensão busca o preço de cada ativo em tempo real e exibe na lista.
 - **Remover ativos**: Você pode remover ativos da sua lista a qualquer momento.
 - **Alertas de preço**: A extensão agora verifica periodicamente os preços dos ativos e envia notificações sempre que um preço atinge o limite configurado (mínimo ou máximo). A verificação é feita a cada 2 minutos. (Você pode alterar esse tempo na linha 6 do arquivo background.js)
+- **Notícias de Ativos**: A extensão busca e exibe as últimas notícias relacionadas aos ativos que você está monitorando.
   
 ---
 
@@ -58,14 +59,19 @@ Após instalá-lo, rode o comando acima 👆
 Agora que a API está rodando, a extensão poderá buscar os preços dos ativos corretamente.
 
 ### Novidades
-Agora, a extensão tem uma funcionalidade adicional: alertas de preço. A cada 2 minutos, a extensão verifica o preço dos ativos cadastrados e envia notificações caso o preço de um ativo atinja os limites configurados (mínimo ou máximo). Essa funcionalidade é controlada pela API ```chrome.alarms```, que cria um alarme para a verificação periódica.
+- Agora, a extensão tem uma funcionalidade adicional: alertas de preço. A cada 2 minutos, a extensão verifica o preço dos ativos cadastrados e envia notificações caso o preço de um ativo atinja os limites configurados (mínimo ou máximo). Essa funcionalidade é controlada pela API ```chrome.alarms```, que cria um alarme para a verificação periódica.
+
+- Notícias de Ativos: A extensão também agora busca as últimas notícias relacionadas aos ativos monitorados. Essas notícias são exibidas na interface da extensão, ajudando a manter você informado sobre os desenvolvimentos mais recentes nos ativos que está acompanhando.
 
 Como funciona:
 
 - O alarme é disparado a cada 2 minutos.
 - A extensão verifica o preço de cada ativo e, caso um preço atinja o limite definido para aquele ativo, uma notificação é enviada.
+- As notícias são exibidas diretamente na interface da extensão, associadas aos ativos monitorados.
 
-Isso permite que você fique sempre atualizado com as flutuações de preço sem precisar atualizar manualmente a página.
+Isso permite que você fique sempre atualizado com as flutuações de preço e as notícias mais recentes dos seus ativos.
+
+
 ## Exemplos de uso
 1. Abra a extensão no Chrome.
 2. Digite o ticker de uma ação (por exemplo, VALE3) no campo de entrada e clique em Adicionar.
