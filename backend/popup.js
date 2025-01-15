@@ -1,3 +1,5 @@
+/*Eventos adicionados*/
+
 document.getElementById("addButton").addEventListener("click", () => {
   const ticker = document.getElementById("ticker").value;
   if (ticker) {
@@ -33,76 +35,19 @@ document.getElementById("addAlertButton").addEventListener("click", () => {
   }
 });
 
-// Lógica para alternar entre as abas
-const tabButtons = document.querySelectorAll(".tab-button");
-const tabContents = document.querySelectorAll(".tab-content");
-
-tabButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    // Remove a classe 'active' de todas as abas
-    tabButtons.forEach(btn => btn.classList.remove("active"));
-    tabContents.forEach(content => content.classList.remove("active"));
-
-    // Adiciona a classe 'active' à aba clicada
-    button.classList.add("active");
-
-    // Adiciona a classe 'active' à seção correspondente
-    const targetSection = document.getElementById("section-" + button.id.split('-')[1]);
-    targetSection.classList.add("active");
-  });
+document.getElementById("voltarButtonSeta").addEventListener("click", () => {
+  // Alterna de volta para a lista de ativos
+  document.getElementById("section-noticias").classList.remove("active");
+  document.getElementById("section-lista").classList.add("active");
 });
 
-// Função para carregar os alertas armazenados
-function loadAlertas() {
-  chrome.storage.local.get("alertas", (data) => {
-    const alertas = data.alertas || [];
-    const alertasList = document.getElementById("alertasList");
-    alertasList.innerHTML = ""; // Limpa a lista antes de adicionar novos itens
-
-    alertas.forEach((alerta, index) => {
-      const listItem = document.createElement("li");
-
-      // Criando o conteúdo do item (somente com o texto do alerta, sem o botão)
-      const alertaText = document.createElement("span");
-      alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: Carregando...`;
-
-      // Adiciona o texto do alerta à lista
-      listItem.appendChild(alertaText);
-
-      // Criando o botão de remover
-      const removeButton = document.createElement("button");
-      removeButton.textContent = "Remover";
-      removeButton.classList.add("remove-button"); // Estilo para o botão
-      removeButton.addEventListener("click", () => {
-        removeAlerta(index);
-      });
-
-      // Adicionando o botão ao item da lista
-      listItem.appendChild(removeButton);
-
-      // Adiciona o item à lista
-      alertasList.appendChild(listItem);
-
-      // Agora chama a função getPrecoAtivo passando o alertaText, onde o preço será atualizado
-      getPrecoAtivo(alerta.ticker, alertaText, (precoAtual) => {
-        // Atualiza o texto do alerta com o preço atual
-        alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: ${precoAtual}`;
-      });
-    });
-  });
-}
-
-function removeAlerta(index) {
-  chrome.storage.local.get("alertas", (data) => {
-    let alertas = data.alertas || [];
-    // Remove o alerta do array
-    alertas.splice(index, 1);
-    chrome.storage.local.set({ alertas }, () => {
-      loadAlertas(); // Recarrega a lista após a remoção
-    });
-  });
-}
-
+document.getElementById("voltarButton").addEventListener("click", () => {
+  // Alterna de volta para a lista de ativos
+  document.getElementById("section-noticias").classList.remove("active");
+  document.getElementById("section-lista").classList.add("active");
+});
+//---------------------------------------------------------------------------------
+/*Função que carrega os preços */
 // Função para buscar o preço do ativo
 function getPrecoAtivo(ticker, itemText, callback) {
   const url = `http://localhost:3000/${ticker}`;
@@ -159,7 +104,80 @@ function getPrecoAtivo(ticker, itemText, callback) {
       }
     });
 }
+//---------------------------------------------------------------------------------
+/*Abas*/
+// Lógica para alternar entre as abas
+const tabButtons = document.querySelectorAll(".tab-button");
+const tabContents = document.querySelectorAll(".tab-content");
 
+tabButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    // Remove a classe 'active' de todas as abas
+    tabButtons.forEach(btn => btn.classList.remove("active"));
+    tabContents.forEach(content => content.classList.remove("active"));
+
+    // Adiciona a classe 'active' à aba clicada
+    button.classList.add("active");
+
+    // Adiciona a classe 'active' à seção correspondente
+    const targetSection = document.getElementById("section-" + button.id.split('-')[1]);
+    targetSection.classList.add("active");
+  });
+});
+//---------------------------------------------------------------------------------
+/*Área dos alertas */
+// Função para carregar os alertas armazenados
+function loadAlertas() {
+  chrome.storage.local.get("alertas", (data) => {
+    const alertas = data.alertas || [];
+    const alertasList = document.getElementById("alertasList");
+    alertasList.innerHTML = ""; // Limpa a lista antes de adicionar novos itens
+
+    alertas.forEach((alerta, index) => {
+      const listItem = document.createElement("li");
+
+      // Criando o conteúdo do item (somente com o texto do alerta, sem o botão)
+      const alertaText = document.createElement("span");
+      alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: Carregando...`;
+
+      // Adiciona o texto do alerta à lista
+      listItem.appendChild(alertaText);
+
+      // Criando o botão de remover
+      const removeButton = document.createElement("button");
+      removeButton.textContent = "Remover";
+      removeButton.classList.add("remove-button"); // Estilo para o botão
+      removeButton.addEventListener("click", () => {
+        removeAlerta(index);
+      });
+
+      // Adicionando o botão ao item da lista
+      listItem.appendChild(removeButton);
+
+      // Adiciona o item à lista
+      alertasList.appendChild(listItem);
+
+      // Agora chama a função getPrecoAtivo passando o alertaText, onde o preço será atualizado
+      getPrecoAtivo(alerta.ticker, alertaText, (precoAtual) => {
+        // Atualiza o texto do alerta com o preço atual
+        alertaText.textContent = `${alerta.ticker.split(":")[0]}: Min: ${alerta.minPrice}, Max: ${alerta.maxPrice}, Atual: ${precoAtual}`;
+      });
+    });
+  });
+}
+
+function removeAlerta(index) {
+  chrome.storage.local.get("alertas", (data) => {
+    let alertas = data.alertas || [];
+    // Remove o alerta do array
+    alertas.splice(index, 1);
+    chrome.storage.local.set({ alertas }, () => {
+      loadAlertas(); // Recarrega a lista após a remoção
+    });
+  });
+}
+//---------------------------------------------------------------------------------
+/*Área da lista de ativos*/
 // Função para carregar os ativos armazenados
 function loadAtivos() {
   chrome.storage.local.get("ativos", (data) => {
@@ -175,11 +193,21 @@ function loadAtivos() {
       itemText.textContent = `${ativo.split(":")[0]} - Carregando preço...`;
       listItem.appendChild(itemText);
 
+      const info = document.createElement("button")
+      info.classList.add("info-button");
+      info.innerHTML = '<i class="fas fa-circle-info"></i>';
+      info.addEventListener("click", () => {
+        showNoticiasSection(ativo)
+      })
+      
+      listItem.appendChild(info)
+
       // Criando o botão de remover
       const removeButton = document.createElement("button");
       removeButton.textContent = "Remover";
       removeButton.classList.add("remove-button"); // Estilo para o botão
-      removeButton.addEventListener("click", () => {
+      removeButton.addEventListener("click", (event) => {
+        event.stopPropagation();
         removeAtivo(index);
       });
 
@@ -205,6 +233,85 @@ function removeAtivo(index) {
     });
   });
 }
+//---------------------------------------------------------------------------------
+/*Área das notícias */
+function showNoticiasSection(ticker) {
+  // Atualiza o texto com o ticker selecionado
+  document.getElementById("noticiasTicker").textContent = `Notícias relacionadas ao ativo: ${ticker.split(":")[0]}`;
+  
+  // Limpa a lista de notícias antes de carregar novas
+  const noticiasList = document.getElementById("noticiasList");
+  noticiasList.innerHTML = "";
+
+  const newsUrl = `https://news.google.com/rss/search?q=${ticker.split(":")[0]}`
+  const numeroNoticias = 25 // Número de notícias que serão carregadas
+
+  // Faz a busca de notícias (usei a API do Google Notícias)
+  fetch(newsUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar notícias: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((data) => {
+      const parser = new DOMParser();
+      const rss = parser.parseFromString(data, "application/xml");
+      const items = rss.querySelectorAll("item");
+
+      // Array para armazenar as notícias com suas datas
+      const noticiasArray = [];
+
+      // Limita a iteração aos primeiros 15 itens
+      Array.from(items).slice(0, numeroNoticias).forEach((item) => {
+        const title = item.querySelector("title").textContent;
+        const pubDate = item.querySelector("pubDate").textContent;
+        const link = item.querySelector("link").textContent;
+
+        // Formatar a data (usando uma biblioteca de data ou JavaScript puro)
+        const date = new Date(pubDate);
+
+        // Armazenar cada notícia e a data no array
+        noticiasArray.push({ title, link, date });
+      });
+      
+      // Ordenar as notícias pela data de publicação (mais recentes primeiro)
+      noticiasArray.sort((a, b) => b.date - a.date);
+
+      noticiasArray.forEach((noticia) => {
+        const { title, link, date } = noticia;
+
+        const formattedDate = date.toLocaleDateString("pt-BR", {
+          year: '2-digit', month: '2-digit', day: '2-digit',
+        });
+
+        const listItem = document.createElement("li");
+        const anchor = document.createElement("a");
+        anchor.href = link;
+        anchor.target = "_blank";
+        anchor.textContent = title;
+
+        // Adicionar a data formatada ao item da lista
+        const dateElement = document.createElement("span");
+        dateElement.classList.add("noticia-date");
+        dateElement.textContent = formattedDate;
+
+        listItem.appendChild(anchor);
+        listItem.appendChild(dateElement);
+        noticiasList.appendChild(listItem);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      noticiasList.innerHTML = "<li>Erro ao carregar notícias.</li>";
+    });
+
+  // Alterna para a seção de notícias
+  document.getElementById("section-lista").classList.remove("active");
+  document.getElementById("section-noticias").classList.add("active");
+}
+
+//---------------------------------------------------------------------------------
 
 // Carrega os ativos e alertas ao abrir o popup
 loadAtivos();

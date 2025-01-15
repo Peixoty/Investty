@@ -8,7 +8,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 300px;
-  width: 375px;
+  width: 400px;
   box-sizing: border-box;
 }
 
@@ -85,6 +85,34 @@ li, .alerta-item {
 
 li:hover, .alerta-item:hover {
   transform: translateY(-3px);
+}
+
+li span {
+  flex: 2;
+  margin-right: 20px; /* Dá espaço entre o texto e os botões */
+}
+
+.info-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 16px;
+  color: #007BFF; /* Azul para indicar clicável */
+  display: flex;
+  margin: 0 10px;
+}
+
+.info-button:hover {
+  color: #0056b3; /* Azul mais escuro no hover */
+}
+
+.info-button i {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.info-button:hover i {
+  transform: scale(1.1); /* Leve ampliação no hover */
 }
 
 .remove-button, .alerta-remove-button {
@@ -181,6 +209,108 @@ li:hover, .alerta-item:hover {
 #addAlertForm button:hover {
   background-color: #5562cc;
 }
+
+/* Seção de notícias */
+#section-noticias {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+/* Título */
+.noticias-title {
+  font-size: 24px;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #f4f4f9;
+  padding-bottom: 10px;
+}
+
+/* Texto do ticker */
+.noticias-ticker {
+  font-size: 16px;
+  color: #555555;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo para a data das notícias */
+.noticia-date {
+  display: block;
+  font-size: 12px;
+  color: #555555;
+  margin-top: 5px;
+}
+
+/* Lista de notícias */
+.noticias-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.noticias-list li {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.noticias-list li:last-child {
+  border-bottom: none;
+}
+
+.noticias-list a {
+  text-decoration: none;
+  color: #0066cc;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.noticias-list a:hover {
+  color: #004999;
+}
+/* Botão "Voltar" como ícone no topo */
+.voltar-button-seta {
+  background: none;
+  border: none;
+  font-size: 20px; /* Ajuste do tamanho da seta */
+  color: #005bb5;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin-left: -10px; /* Para alinhar a seta mais perto do título */
+}
+
+.voltar-button-seta:hover {
+  color: #003f7d;
+}
+
+/* Botão "Voltar" */
+.voltar-button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #0066cc;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.voltar-button:hover {
+  background-color: #004999;
+  transform: scale(1.05);
+}
+
+.voltar-button:active {
+  transform: scale(0.95);
+}
+
 
 /* Outros estilos do projeto */
 

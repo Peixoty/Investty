@@ -11,7 +11,11 @@
       "notifications",
       "storage",
       "activeTab",
-      "alarms"
+      "alarms",
+      "scripting"
+    ],
+    "host_permissions": [
+      "https://news.google.com/rss/*"
     ],
     "background": {
       "service_worker": "./backend/background.js"
