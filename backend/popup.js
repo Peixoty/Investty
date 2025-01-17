@@ -50,7 +50,7 @@ document.getElementById("voltarButton").addEventListener("click", () => {
 /*Função que carrega os preços */
 // Função para buscar o preço do ativo
 function getPrecoAtivo(ticker, itemText, callback) {
-  const url = `http://localhost:3000/${ticker}`;
+  const url = `https://stock-scraper-api.vercel.app/${ticker}`;
 
   // Moedas das bolsas do mundo
   const moedas = ["R$", "$", "€", "£"];
