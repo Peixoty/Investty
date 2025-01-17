@@ -318,6 +318,6 @@ loadAtivos();
 loadAlertas();
 
 // No popup, atualiza o preço dos ativos a cada 10 segundos
-setInterval(loadAtivos, 10 * 1000)
-setInterval(loadAlertas, 10 * 1000)
+setInterval(loadAtivos, 33 * 1000)
+setInterval(loadAlertas, 33 * 1000)
 
