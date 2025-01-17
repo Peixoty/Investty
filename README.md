@@ -42,22 +42,6 @@ Caso você não tenha o `git` instalado, baixe por aqui:
 
 Após baixar o zip, extraia o projeto para uma pasta.
 
-#### Passo 2: Rodar a API localmente
-No terminal da pasta, rode:
-```bash
-node api.js
-```
-Isso fará com que a API seja iniciada em http://localhost:3000/
-
-Se você não tiver o node instalado, basta instalá-lo no link abaixo:
-
-[Instale o Node JS aqui](https://nodejs.org/pt/download)
-
-Após instalá-lo, rode o comando acima 👆
-
-### Passo 4: Configuração final
-Agora que a API está rodando, a extensão poderá buscar os preços dos ativos corretamente.
-
 ### Novidades
 - Agora, a extensão tem uma funcionalidade adicional: alertas de preço. A cada 2 minutos, a extensão verifica o preço dos ativos cadastrados e envia notificações caso o preço de um ativo atinja os limites configurados (mínimo ou máximo). Essa funcionalidade é controlada pela API ```chrome.alarms```, que cria um alarme para a verificação periódica.
 
@@ -97,17 +81,10 @@ Isso permite que você fique sempre atualizado com as flutuações de preço e a
 | |- popup.html
 | |- style.css
 |
-|-/api
-  |- index.js
 ```
 
 ## Contribuindo
 Sinta-se à vontade para contribuir com melhorias, correções de bugs ou novas funcionalidades! Se tiver alguma dúvida, não hesite em abrir uma issue ou enviar um pull request.
-
-## Problemas Comuns
-Erro ao rodar a API: Certifique-se de que você está executando o comando ```node api``` a partir da pasta correta e que as dependências (express, axios, cheerio) estão instaladas.
-
-CORS: A API deve ser executada no mesmo domínio (localhost) que a extensão para evitar problemas com a política de CORS.
 
 ## Contato
 - E-mail: maestrellipeixoto@gmail.com
