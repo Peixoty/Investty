@@ -19,7 +19,7 @@ document.getElementById("addAlertButton").addEventListener("click", () => {
   const minPrice = parseFloat(document.getElementById("minPrice").value);
   const maxPrice = parseFloat(document.getElementById("maxPrice").value);
 
-  if (ticker && !isNaN(minPrice) && !isNaN(maxPrice)) {
+  if (ticker && !isNaN(minPrice) && !isNaN(maxPrice) && minPrice<maxPrice) {
     // Adiciona o alerta ao armazenamento
     chrome.storage.local.get("alertas", (data) => {
       const alertas = data.alertas || [];
@@ -48,9 +48,9 @@ document.getElementById("voltarButton").addEventListener("click", () => {
 });
 //---------------------------------------------------------------------------------
 /*Função que carrega os preços */
-// Função para buscar o preço do ativo
+// Função para buscar o preço do ativo individual
 function getPrecoAtivo(ticker, itemText, callback) {
-  const url = `https://stock-scraper-api.vercel.app/${ticker}`;
+  const url = `http://localhost:3000/${ticker}`;
 
   // Moedas das bolsas do mundo
   const moedas = ["R$", "$", "€", "£"];
@@ -102,6 +102,80 @@ function getPrecoAtivo(ticker, itemText, callback) {
       if (itemText) {
         itemText.textContent = `${ticker} - Erro ao carregar preço`;
       }
+    });
+}
+
+let isFetching = false; // Variável para evitar múltiplas chamadas
+
+// Função que busca o preço de vários ativos de uma vez
+function getInfoAtivos(tickers, callback) {
+
+  if (isFetching) {
+    console.log("Já estamos buscando os ativos. Ignorando chamada.");
+    return;
+  }
+
+  const url = `https://stock-scraper-api.vercel.app/tickers?ativos=${tickers.join(",")}`;
+
+  // Moedas das bolsas do mundo
+  const moedas = ["R$", "$", "€", "£"];
+
+  isFetching = true; // Bloqueia novas chamadas
+
+  // Faz a requisição à API para buscar o preço
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const infoAtivos = [];
+
+      data.forEach((ativo) => {
+        if (ativo.price && ativo.close) {
+          let precoAtual = ativo.price;
+          let precoFechamento = ativo.close;
+
+          // Remove os símbolos de moeda dinamicamente
+          moedas.forEach((moeda) => {
+            precoAtual = precoAtual.replace(moeda, "");
+            precoFechamento = precoFechamento.replace(moeda, "");
+          });
+
+          const precoAtualNumerico = parseFloat(precoAtual.replace(",", "."));
+          const precoFechamentoNumerico = parseFloat(precoFechamento.replace(",", "."));
+
+          const variacaoDia = ((precoAtualNumerico / precoFechamentoNumerico) - 1) * 100;
+
+          // Formata a variação com sinal e 2 casas decimais
+          const variacaoTexto =
+            variacaoDia >= 0 ? `+${variacaoDia.toFixed(2)}%` : `${variacaoDia.toFixed(2)}%`;
+
+          // Adiciona as informações ao array
+          infoAtivos.push({
+            ticker: ativo.ticker,
+            name: ativo.name,
+            symbolPrice: ativo.price,
+            price: precoAtual,
+            close: precoFechamento,
+            variacao: variacaoTexto,
+            variacaoClasse: variacaoDia >= 0 ? "positivo" : "negativo",
+          });
+        }
+      });
+
+      if (callback) {
+        callback(infoAtivos);  // Passa o array infoAtivos para o callback
+      }
+
+    })
+    .catch((error) => {
+      console.error("Erro ao buscar informações dos ativos:", error);
+    })
+    .finally(() => {
+      isFetching = false; // Libera novas chamadas após a conclusão
     });
 }
 //---------------------------------------------------------------------------------
@@ -183,45 +257,65 @@ function loadAtivos() {
   chrome.storage.local.get("ativos", (data) => {
     const ativos = data.ativos || [];
     const list = document.getElementById("ativosList");
-    list.innerHTML = ""; // Limpa a lista antes de adicionar novos itens
+    list.innerHTML = ""
 
+    // Verificar se a lista de ativos já existe, caso contrário, cria
     ativos.forEach((ativo, index) => {
-      const listItem = document.createElement("li");
-
-      // Criando o conteúdo do item
-      const itemText = document.createElement("span");
-      itemText.textContent = `${ativo.split(":")[0]} - Carregando preço...`;
-      listItem.appendChild(itemText);
-
-      const info = document.createElement("button")
-      info.classList.add("info-button");
-      info.innerHTML = '<i class="fas fa-circle-info"></i>';
-      info.addEventListener("click", () => {
-        showNoticiasSection(ativo)
-      })
+      // Procurar o item na lista para verificar se já existe
+      let listItem = document.querySelector(`#ativo-${ativo.split(":")[0]}`);
       
-      listItem.appendChild(info)
+      // Se o item não existe, cria um novo
+      if (!listItem) {
+        listItem = document.createElement("li");
+        listItem.id = `ativo-${ativo.split(":")[0]}`; // Define um ID único para o ativo
 
-      // Criando o botão de remover
-      const removeButton = document.createElement("button");
-      removeButton.textContent = "Remover";
-      removeButton.classList.add("remove-button"); // Estilo para o botão
-      removeButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        removeAtivo(index);
+        // Criando o conteúdo do item
+        const itemText = document.createElement("span");
+        itemText.textContent = `${ativo.split(":")[0]} - Carregando preço...`;
+        listItem.appendChild(itemText);
+
+        const info = document.createElement("button");
+        info.classList.add("info-button");
+        info.innerHTML = '<i class="fas fa-circle-info"></i>';
+        info.addEventListener("click", () => {
+          showNoticiasSection(ativo);
+        });
+        
+        listItem.appendChild(info);
+
+        // Criando o botão de remover
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remover";
+        removeButton.classList.add("remove-button");
+        removeButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          removeAtivo(index);
+        });
+
+        listItem.appendChild(removeButton);
+
+        // Adiciona o item à lista
+        list.appendChild(listItem);
+      }
+
+      // Atualiza o preço do ativo depois de buscar os dados
+      getInfoAtivos(ativos, (infoAtivos) => {
+        infoAtivos.forEach((ativoInfo) => {
+          const ativoId = ativoInfo.ticker.split(":")[0];
+
+          // Procurar o item na lista usando o ID
+          const itemToUpdate = document.querySelector(`#ativo-${ativoId}`);
+
+          if (itemToUpdate) {
+            const itemText = itemToUpdate.querySelector("span");
+            itemText.innerHTML = `${ativoId}: ${ativoInfo.symbolPrice} <span class="${ativoInfo.variacaoClasse}">(${ativoInfo.variacao})</span>`;
+          }
+        });
       });
-
-      // Adicionando o botão ao item da lista
-      listItem.appendChild(removeButton);
-
-      // Adiciona o item à lista
-      list.appendChild(listItem);
-
-      // Chama a função para buscar o preço e atualizar apenas o texto relacionado ao preço
-      getPrecoAtivo(ativo, itemText);
     });
   });
 }
+
 
 function removeAtivo(index) {
   chrome.storage.local.get("ativos", (data) => {
@@ -318,6 +412,6 @@ loadAtivos();
 loadAlertas();
 
 // No popup, atualiza o preço dos ativos a cada 10 segundos
-setInterval(loadAtivos, 10 * 1000)
-setInterval(loadAlertas, 10 * 1000)
+setInterval(loadAtivos, 30 * 1000)
+setInterval(loadAlertas, 30 * 1000)
 

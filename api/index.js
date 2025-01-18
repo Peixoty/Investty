@@ -12,13 +12,66 @@ const cheerio = require("cheerio")
 
 // Importando o pacote CORS
 const cors = require('cors')
+
 //--------------------------------------------------------
 //Middleware Global
 
 // Habilitando o CORS para todas as origens
 app.use(cors())
+
+// Para JSON
+app.use(express.json()); 
+
+// Para query strings
+app.use(express.urlencoded({ extended: true }));
 //--------------------------------------------------------
 
+app.get("/tickers", async (req, res) => {
+    const { ativos } = req.query; // Ex: ativos=BEEF3,VALE3,RAIZ4
+
+    if (!ativos) {
+        return res.status(400).json({ error: "Nenhum ativo foi fornecido." });
+    }
+
+    const tickers = ativos.split(","); // Divide os ativos em uma lista
+    const results = [];
+
+    for (const ticker of tickers) {
+        let formattedTicker = ticker.includes(":") ? ticker : `${ticker}:BVMF`;
+        const url = `https://www.google.com/finance/quote/${formattedTicker}`;
+
+        try {
+            const { data } = await axios.get(url);
+            const $ = cheerio.load(data);
+
+            const stockName = $(".zzDege").text();
+            const stockPrice = $(".YMlKec.fxKbKc").first().text();
+            const stockClose = $(".P6K39c").first().text();
+
+            if (stockName && stockPrice) {
+                results.push({
+                    ticker: formattedTicker,
+                    name: stockName,
+                    price: stockPrice,
+                    close: stockClose,
+                });
+            } else {
+                results.push({
+                    ticker: formattedTicker,
+                    error: "Dados não encontrados",
+                });
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar dados para o ativo ${formattedTicker}:`, error.message);
+            results.push({
+                ticker: formattedTicker,
+                error: "Erro ao buscar dados",
+            });
+        }
+    }
+
+    res.json(results); // Retorna a lista de resultados
+});
 
 app.get("/:ticker", async (req, res) => {
     let { ticker } = req.params
@@ -52,5 +105,6 @@ app.get("/:ticker", async (req, res) => {
     }
 })
 
-app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
 
+
+app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
