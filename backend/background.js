@@ -50,37 +50,101 @@ function getPrecoAtivo(ticker, itemText, callback) {
     });
 }
 
-// Função para verificar os alertas
-function checkAlertas() {
+let isFetching = false; // Variável para evitar múltiplas chamadas
+
+function getInfoAtivos(tickers, callback) {
+
+  if (isFetching) {
+    console.log("Já estamos buscando os ativos. Ignorando chamada.");
+    return;
+  }
+
+  const url = `https://stock-scraper-api.vercel.app/tickers?ativos=${tickers.join(",")}`;
+
   // Moedas das bolsas do mundo
   const moedas = ["R$", "$", "€", "£"];
 
-  chrome.storage.local.get(["alertas", "ativos"], (data) => {
-    const alertas = data.alertas || [];
+  isFetching = true; // Bloqueia novas chamadas
 
-    alertas.forEach((alerta) => {
-      getPrecoAtivo(alerta.ticker, null, ({ticker, name, price}) => {
-        let precoAtual = price;
+  // Faz a requisição à API para buscar o preço
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const infoAtivos = [];
 
-        moedas.forEach(moeda => {
-          precoAtual = precoAtual.replace(moeda, "")
-        })
+      data.forEach((ativo) => {
+        if (ativo.price && ativo.close) {
+          let precoAtual = ativo.price;
+          let precoFechamento = ativo.close;
 
-        const precoNumerico = parseFloat(precoAtual.replace(",", "."));
+          // Remove os símbolos de moeda dinamicamente
+          moedas.forEach((moeda) => {
+            precoAtual = precoAtual.replace(moeda, "");
+            precoFechamento = precoFechamento.replace(moeda, "");
+          });
 
-        if (precoNumerico <= alerta.minPrice) {
-          sendNotification(
-            `${name} - Preço baixo atingido!`,
-            `${ticker} caiu para ${price} (Min: R$${alerta.minPrice})`
-          );
-        } else if (precoNumerico >= alerta.maxPrice) {
-          sendNotification(
-            `${name} - Preço alto atingido!`,
-            `${ticker} subiu para ${price} (Max: R$${alerta.maxPrice})`
-          );
+          const precoAtualNumerico = parseFloat(precoAtual.replace(",", "."));
+          const precoFechamentoNumerico = parseFloat(precoFechamento.replace(",", "."));
+
+          const variacaoDia = ((precoAtualNumerico / precoFechamentoNumerico) - 1) * 100;
+
+          // Formata a variação com sinal e 2 casas decimais
+          const variacaoTexto =
+            variacaoDia >= 0 ? `+${variacaoDia.toFixed(2)}%` : `${variacaoDia.toFixed(2)}%`;
+
+          // Adiciona as informações ao array
+          infoAtivos.push({
+            ticker: ativo.ticker,
+            name: ativo.name,
+            symbolPrice: ativo.price,
+            price: precoAtual,
+            close: precoFechamento,
+            variacao: variacaoTexto,
+            variacaoClasse: variacaoDia >= 0 ? "positivo" : "negativo",
+          });
         }
       });
+
+      if (callback) {
+        callback(infoAtivos);  // Passa o array infoAtivos para o callback
+      }
+
+    })
+    .catch((error) => {
+      console.error("Erro ao buscar informações dos ativos:", error);
+    })
+    .finally(() => {
+      isFetching = false; // Libera novas chamadas após a conclusão
     });
+}
+
+// Função para verificar os alertas
+function checkAlertas() {
+  chrome.storage.local.get(["alertas"], (data) => {
+    const alertas = data.alertas || [];
+
+    const tickers = alertas.map((alerta) => alerta.ticker)
+
+    getInfoAtivos(tickers, (ativos) => {
+      ativos.forEach((ativo, index) => {
+        if (ativo.price <= alertas[index].minPrice){
+          sendNotification(
+            `${ativo.name} - Preço baixo atingido!`,
+            `${ativo.ticker} caiu para ${ativo.price} (Min: R$${alertas[index].minPrice})`
+          );
+        } else if (ativo.price >= alertas[index].maxPrice){
+          sendNotification(
+            `${ativo.name} - Preço alto atingido!`,
+            `${ativo.ticker} subiu para ${ativo.price} (Max: R$${alertas[index].maxPrice})`
+          );
+        }
+      })
+    })
   });
 }
 
