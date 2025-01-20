@@ -111,7 +111,6 @@ let isFetching = false; // Variável para evitar múltiplas chamadas
 function getInfoAtivos(tickers, callback) {
 
   if (isFetching) {
-    console.log("Já estamos buscando os ativos. Ignorando chamada.");
     return;
   }
 
@@ -422,14 +421,12 @@ loadAtivos();
 // No popup, atualiza o preço dos ativos a cada 10 segundos
 setInterval(() => {
   if (isAtivosSectionActive()) {
-    console.log("Ativos")
     loadAtivos();
   }
 }, 30 * 1000); // Atualiza a cada 30 segundos
 
 setInterval(() => {
   if (isAlertasSectionActive()) {
-    console.log("Alertas")
     loadAlertas();
   }
 }, 30 * 1000); // Atualiza a cada 30 segundos

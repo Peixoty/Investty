@@ -20,42 +20,12 @@ function sendNotification(title, message) {
 }
 
 // Função para buscar o preço do ativo
-function getPrecoAtivo(ticker, itemText, callback) {
-  const url = `https://stock-scraper-api.vercel.app/${ticker}`;
-
-  fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data && data.price) {
-        if (itemText) {
-          itemText.textContent = `${ticker}: ${data.price}`;
-        }
-        if (callback) {
-          callback(data);
-        }
-      } else if (itemText) {
-        itemText.textContent = `${ticker} - Preço não encontrado`;
-      }
-    })
-    .catch((error) => {
-      console.error("Erro ao buscar o preço:", error);
-      if (itemText) {
-        itemText.textContent = `${ticker} - Erro ao carregar preço`;
-      }
-    });
-}
 
 let isFetching = false; // Variável para evitar múltiplas chamadas
 
 function getInfoAtivos(tickers, callback) {
 
   if (isFetching) {
-    console.log("Já estamos buscando os ativos. Ignorando chamada.");
     return;
   }
 
