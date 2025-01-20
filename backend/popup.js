@@ -316,7 +316,6 @@ function loadAtivos() {
   });
 }
 
-
 function removeAtivo(index) {
   chrome.storage.local.get("ativos", (data) => {
     let ativos = data.ativos || [];
@@ -407,11 +406,31 @@ function showNoticiasSection(ticker) {
 
 //---------------------------------------------------------------------------------
 
-// Carrega os ativos e alertas ao abrir o popup
+// Função para verificar se a seção de ativos está ativa
+function isAtivosSectionActive() {
+  return document.getElementById("section-lista").classList.contains("active");
+}
+
+// Função para verificar se a seção de ativos está ativa
+function isAlertasSectionActive() {
+  return document.getElementById("section-alertas").classList.contains("active");
+}
+
+// Carrega os ativos ao abrir o popup
 loadAtivos();
-loadAlertas();
 
 // No popup, atualiza o preço dos ativos a cada 10 segundos
-setInterval(loadAtivos, 30 * 1000)
-setInterval(loadAlertas, 30 * 1000)
+setInterval(() => {
+  if (isAtivosSectionActive()) {
+    console.log("Ativos")
+    loadAtivos();
+  }
+}, 30 * 1000); // Atualiza a cada 30 segundos
+
+setInterval(() => {
+  if (isAlertasSectionActive()) {
+    console.log("Alertas")
+    loadAlertas();
+  }
+}, 30 * 1000); // Atualiza a cada 30 segundos
 
