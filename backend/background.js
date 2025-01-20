@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(() => {
   
   // Definir um alarme para verificar os alertas a cada 2 minutos (120 segundos)
   chrome.alarms.create("verificarAlertas", {
-    periodInMinutes: 2 // Periodicidade do alarme (2 minutos)
+    periodInMinutes: 0.1 // Periodicidade do alarme (2 minutos)
   });
 });
 
@@ -100,7 +100,9 @@ function checkAlertas() {
 
     const tickers = alertas.map((alerta) => alerta.ticker)
 
-    getInfoAtivos(tickers, (ativos) => {
+    if (tickers.length > 0) {
+      console.log(tickers)
+      getInfoAtivos(tickers, (ativos) => {
       ativos.forEach((ativo, index) => {
         if (ativo.price <= alertas[index].minPrice){
           sendNotification(
@@ -114,7 +116,8 @@ function checkAlertas() {
           );
         }
       })
-    })
+      })
+    }
   });
 }
 
