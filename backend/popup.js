@@ -417,6 +417,7 @@ function isAlertasSectionActive() {
 
 // Carrega os ativos ao abrir o popup
 loadAtivos();
+loadAlertas();
 
 // No popup, atualiza o preço dos ativos a cada 10 segundos
 setInterval(() => {
