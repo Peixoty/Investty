@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(() => {
   
   // Definir um alarme para verificar os alertas a cada 2 minutos (120 segundos)
   chrome.alarms.create("verificarAlertas", {
-    periodInMinutes: 0.1 // Periodicidade do alarme (2 minutos)
+    periodInMinutes: 2 // Periodicidade do alarme (2 minutos)
   });
 });
 
